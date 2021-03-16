@@ -1,13 +1,13 @@
 
 ;; ----- smex-history -----
 (
+ shell
  package-autoremove
  package-refresh-contents
  package-list-packages
  byte-recompile-directory
  package-reinstall
  package-install
- list-packages
 )
 
 ;; ----- smex-data -----
@@ -43,7 +43,7 @@
  (describe-variable . 1)
  (vc-annotate . 1)
  (org-clock-report . 52)
- (shell . 772)
+ (shell . 773)
  (prettify-symbols-mode . 2)
  (org-latex-preview . 3)
  (run-python . 1)
