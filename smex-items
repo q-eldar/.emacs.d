@@ -1,25 +1,25 @@
 
 ;; ----- smex-history -----
 (
+ byte-recompile-directory
+ package-refresh-contents
+ list-packages
  shell
  package-autoremove
- package-refresh-contents
  package-list-packages
- byte-recompile-directory
  package-reinstall
- package-install
 )
 
 ;; ----- smex-data -----
 (
  (package-reinstall . 24)
- (package-refresh-contents . 51)
+ (package-refresh-contents . 52)
  (package-list-packages . 25)
  (package-install . 81)
  (avy-goto-char . 1)
  (eval-buffer . 69)
  (eglot . 2)
- (byte-recompile-directory . 13)
+ (byte-recompile-directory . 14)
  (package-autoremove . 20)
  (package-delete . 2)
  (python-menu . 1)
@@ -87,7 +87,7 @@
  (eshell . 1)
  (dired . 1)
  (lsp-disconnect . 1)
- (list-packages . 3)
+ (list-packages . 4)
  (makefile-mode . 1)
  (helm-mode . 2)
  (ido-mode . 2)

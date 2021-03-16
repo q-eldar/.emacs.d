@@ -183,18 +183,14 @@
 
 ;; end org
 
-
-
-
-
-
-;; end: latex
 (use-package doom-themes
   :ensure t
   :preface (defvar region-fg nil)
   :config (load-theme 'doom-one t))
-;;                                                    LSP
 
+;;                                                                            ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;LSP;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                                                            ;;
 
 (use-package lsp-mode
     :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
@@ -202,23 +198,21 @@
 	   (lisp-mode . lsp)
 	   (cpp-mode . lsp-deferred)
             ;; if you want which-key integration
-            (lsp-mode . lsp-enable-which-key-integration))
+           (lsp-mode . lsp-enable-which-key-integration))
     :commands (lsp lsp-deferred))
 
-
-(use-package lsp-python-ms
-  :ensure t
-  :init (setq lsp-python-ms-auto-install-server t)  
-  :hook (python-mode . (lambda ()
-                         (require 'lsp-python-ms)
-                         (lsp-deferred)))
-  :init
-  (setq lsp-python-ms-executable (executable-find "python-language-server")))
-
+(use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
+(use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+(use-package lsp-ui :commands lsp-ui-mode)
 (with-eval-after-load 'lsp-mode
   (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration)
-  ;; (yas-global-mode)
+  (yas-global-mode)
   )
+(use-package which-key
+  :ensure t
+  :diminish which-key-mode
+  :config
+    (which-key-mode))
 (require 'lsp-mode)
 (lsp-register-client
     (make-lsp-client :new-connection (lsp-tramp-connection "clangd")
@@ -232,12 +226,7 @@
 ;; (define-key global-map [remap find-file] #'helm-find-files)
 ;; (define-key global-map [remap execute-extended-command] #'helm-M-x)
 ;; (define-key global-map [remap switch-to-buffer] #'helm-mini)
-(use-package helm-lsp :commands helm-lsp-workspace-symbol)
-(use-package which-key
-  :ensure t
-  :diminish which-key-mode
-  :config
-    (which-key-mode))
+;; (use-package helm-lsp :commands helm-lsp-workspace-symbol)
 
 
 ;; (require' lsp-ui)
@@ -250,14 +239,13 @@
 
 (setq lsp-disabled-clients '(eslint))
 ;; python-lsp :: https://www.mattduck.com/lsp-python-getting-started.html
-(add-hook 'python-mode-hook 'eglot-ensure)
-(use-package lsp-python-ms
-  :ensure t
-  :init (setq lsp-python-ms-auto-install-server t)
-  :hook (python-mode . (lambda ()
-                          (require 'lsp-python-ms)
-                          (lsp))))  ; or lsp-deferred
-
+;; (add-hook 'python-mode-hook 'eglot-ensure)
+;; (use-package lsp-python-ms
+;;   :ensure t
+;;   :init (setq lsp-python-ms-auto-install-server t)
+;;   :hook (python-mode . (lambda ()
+;;                           (require 'lsp-python-ms)
+;;                           (lsp))))  ; or lsp-deferred
 
 (use-package ace-window
   :ensure t
