@@ -1,0 +1,15 @@
+*~
+elpa/
+auto-save-list/
+bookmarks
+.cache/
+.dap-breakpoints
+eshell/
+.extension/
+ido.last
+image-dired/
+.lsp-session-v1
+projectile-bookmarks.eld
+projects
+recentf
+tramp
