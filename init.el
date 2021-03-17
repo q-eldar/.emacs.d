@@ -99,7 +99,10 @@
 ;;      (propertize title 'face face))))
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;ORG;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                                                            ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;ORG;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                                                            ;;
+
 (use-package org
   :ensure nil
   :mode ("\\.org\\'" . org-mode)
@@ -145,7 +148,7 @@
     (setq org-clock-persist t)
     (org-clock-persistence-insinuate)
     (setq org-time-clocksum-format '(:hours "%d" :require-hours t :minutes ":%02d" :require-minutes t))
-    (setq org-startup-folded 1)
+    (setq org-startup-folded t)
     (setq org-format-latex-options (plist-put org-format-latex-options :scale 2.0))
     ))
 (use-package org-inlinetask
@@ -188,6 +191,12 @@
   :preface (defvar region-fg nil)
   :config (load-theme 'doom-one t))
 
+(use-package yasnippet
+  :bind
+  ("C-c y s" . yas-insert-snippet)
+  :config
+  ;; (yas-global-mode)
+  )
 ;;                                                                            ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;LSP;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                                                            ;;
@@ -495,7 +504,7 @@
      ("\\.x?html?\\'" . default)
      ("\\.pdf\\'" . emacs)))
  '(package-selected-packages
-   '(smartparens rainbow-delimiters ace-window multiple-cursors which-key cask dash-functional dash flx-ido lsp-python-ms company posframe helm-projectile lsp-mode diredfl treemacs-icons-dired restclient rg counsel-projectile projectile emmet-mode yasnippet-snippets dap-mode cmake-mode snippet major-mode-hydra pretty-hydra openwith org-noter-pdftools org-pdftools pdf-tools org-bullets use-package doom-themes expand-region mwim electric-operator counsel smex swiper avy ivy flycheck)))
+   '(lsp-ui smartparens rainbow-delimiters ace-window multiple-cursors which-key cask dash-functional dash flx-ido lsp-python-ms company posframe helm-projectile lsp-mode diredfl treemacs-icons-dired restclient rg counsel-projectile projectile emmet-mode yasnippet-snippets dap-mode cmake-mode snippet major-mode-hydra pretty-hydra openwith org-noter-pdftools org-pdftools pdf-tools org-bullets use-package doom-themes expand-region mwim electric-operator counsel smex swiper avy ivy flycheck)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
