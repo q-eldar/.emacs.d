@@ -1,32 +1,32 @@
 
 ;; ----- smex-history -----
 (
- company-mode
- lsp
- lsp-mode
- package-install
- package-refresh-contents
- byte-recompile-directory
  list-packages
+ package-refresh-contents
+ dockerfile-mode
+ package-install
+ lsp
+ shell
+ qml-mode
 )
 
 ;; ----- smex-data -----
 (
- (package-reinstall . 24)
- (package-refresh-contents . 53)
- (package-list-packages . 25)
- (package-install . 83)
+ (package-reinstall . 26)
+ (package-refresh-contents . 77)
+ (package-list-packages . 28)
+ (package-install . 106)
  (avy-goto-char . 1)
- (eval-buffer . 69)
+ (eval-buffer . 77)
  (eglot . 2)
  (byte-recompile-directory . 14)
- (package-autoremove . 20)
+ (package-autoremove . 32)
  (package-delete . 2)
  (python-menu . 1)
  (python-mode . 1)
  (pdf-tools-install . 1)
- (company-mode . 61)
- (eval-region . 1)
+ (company-mode . 66)
+ (eval-region . 3)
  (org-open-at-point . 1)
  (org-pdftools-setup-link . 1)
  (server-start . 21)
@@ -43,7 +43,7 @@
  (describe-variable . 1)
  (vc-annotate . 1)
  (org-clock-report . 52)
- (shell . 773)
+ (shell . 781)
  (prettify-symbols-mode . 2)
  (org-latex-preview . 3)
  (run-python . 1)
@@ -52,7 +52,7 @@
  (org-reload . 3)
  (org-display-inline-images . 3)
  (lsp-mode . 8)
- (lsp . 384)
+ (lsp . 387)
  (cmake-mode . 1)
  (emmet-mode . 25)
  (html-mode . 7)
@@ -62,10 +62,10 @@
  (lsp-ui-peek-find-definitions . 1)
  (dap-chrome-setup . 1)
  (xref-find-definitions . 3)
- (lsp-ui-mode . 1)
+ (lsp-ui-mode . 3)
  (js-mode . 4)
  (emacs-lisp-mode . 1)
- (restclient-mode . 2)
+ (restclient-mode . 3)
  (json-mode . 1)
  (gdb . 1)
  (irony-mode . 4)
@@ -87,9 +87,15 @@
  (eshell . 1)
  (dired . 1)
  (lsp-disconnect . 1)
- (list-packages . 4)
+ (list-packages . 14)
  (makefile-mode . 1)
  (helm-mode . 2)
  (ido-mode . 2)
  (counsel-company . 1)
+ (package-initialize . 2)
+ (lsp-ui-peek-mode . 2)
+ (lisp-mode . 1)
+ (qml-mode . 1)
+ (tramp-cleanup-this-connection . 1)
+ (dockerfile-mode . 1)
 )

@@ -5,27 +5,23 @@ name: CI
 # Controls when the action will run. 
 on: push
 
-
-  # Allows you to run this workflow manually from the Actions tab
-
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  build:
+  Explore-Github-Actins:
     # The type of runner that the job will run on
     runs-on: self-hosted
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
-
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+      - run: echo "event: ${{ github.event_name }}"
+      - run: echo "os: ${{ runner.os }}"
+      - run: echo "branch: ${{ github.ref }}"
+      - run: echo "repository: ${{ github.repository }}"
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - run: echo "${{ github.repository }}"
+      - name: List files in the repository
         run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+          ls ${{ github.workspace }}
+      - run: echo "job status: ${{ job.status }}"

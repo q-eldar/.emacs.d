@@ -8,7 +8,7 @@
 
 ;; https://explog.in/dot/emacs/config.html
 ;; http://tech.memoryimprintstudio.com/pdf-annotation-related-tools/
-;; (setq warning-suppress-log-types '((package reinitialization)))
+(setq warning-suppress-log-types '((package reinitialization)))
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
@@ -43,14 +43,18 @@
 
 (display-time-mode 1)
 
-(package-initialize nil)
-(add-to-list 'package-archives
-             '("org" . "http://orgmode.org/elpa/"))
-(add-to-list 'package-archives
-             '("melpa" . "http://melpa.org/packages/") t)
-(setq package-archive-priorities '(("org" . 3)
-                                   ("melpa" . 2)
-                                   ("gnu" . 1)))
+(require 'cask "~/.cask/cask.el")
+(cask-initialize)
+;; (package-initialize)
+;; (package-initialize nil)
+;; (add-to-list 'package-archives
+;;              '("org" . "http://orgmode.org/elpa/"))
+;; (add-to-list 'package-archives
+;;              '("melpa" . "http://melpa.org/packages/") t)
+;; (setq package-archive-priorities '(("org" . 3)
+;;                                    ("melpa" . 2)
+;;                                    ("gnu" . 1)))
+;;;;------>  https://jwiegley.github.io/use-package/keywords/#after
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
@@ -66,10 +70,16 @@
 	("C-c C-<" . mc/mark-all-like-this))
   )
 ;; save cursor position for a file
-(require 'saveplace)
-(setq save-place-file (concat user-emacs-directory "saveplace.el"))
-(setq-default save-place t)
+(use-package saveplace
+  :ensure t
+  :init (save-place-mode)
+  :config
+  (setq save-place-file (concat user-emacs-directory "saveplace.el"))
+  (setq-default save-place t)
+  :defer t
+  )
 
+(require 'saveplace-pdf-view)
 ;; (use-package projectile
 ;;   :diminish projectile-mode
 ;;   :config (projectile-mode)
@@ -81,24 +91,12 @@
 ;;   (setq projectile-switch-project-action #'projectile-dired)
 ;;   )
 
-;; ;; hydra
-;; (require 'major-mode-hydra)
-;; (cl-defun pretty-hydra-title (title &optional icon-type icon-name
-;;                                     &key face height v-adjust)
-;;   "Add an icon in the hydra title."
-;;   (let ((face (or face `(:foreground ,(face-background 'highlight))))
-;;         (height (or height 1.0))
-;;         (v-adjust (or v-adjust 0.0)))
-;;     (concat
-;;      (when (and (icons-displayable-p) icon-type icon-name)
-;;        (let ((f (intern (format "all-the-icons-%s" icon-type))))
-;;          (when (fboundp f)
-;;            (concat
-;;             (apply f (list icon-name :face face :height height :v-adjust v-adjust))
-;;             " "))))
-;;      (propertize title 'face face))))
-
-
+(use-package major-mode-hydra
+  :ensure t
+  :demand t
+  :bind
+  ("M-SPC" . major-mode-hydra))
+(use-package diminish)
 ;;                                                                            ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;ORG;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                                                            ;;
@@ -112,45 +110,92 @@
          ("C-c b" . org-iswitchb)
          ("C-c C-w" . org-refile)
          ("C-c j" . org-clock-goto)
-         ("C-c C-x C-o" . org-clock-out))
-    :config
-  (progn
-    ;; The GTD part of this config is heavily inspired by
-    ;; https://emacs.cafe/emacs/orgmode/gtd/2017/06/30/orgmode-gtd.html
-    (setq org-directory "~/org")
-    (setq org-agenda-files
-          (mapcar (lambda (path) (concat org-directory path))
-                  '("/org.org"
-                    "/gtd/gtd.org"
-                    "/gtd/inbox.org"
-                    "/gtd/tickler.org")))
-    (setq org-log-done 'time)
-    (setq org-src-fontify-natively t)
-    (setq org-use-speed-commands t)
-    (setq org-capture-templates
-          '(("t" "Todo [inbox]" entry
-             (file+headline "~/org/gtd/inbox.org" "Tasks")
-             "* TODO %i%?")
-            ("T" "Tickler" entry
-             (file+headline "~/org/gtd/tickler.org" "Tickler")
-             "* %i%? \n %^t")))
-    (setq org-refile-targets
-          '(("~/org/gtd/gtd.org" :maxlevel . 3)
-            ("~/org/gtd/someday.org" :level . 1)
-            ("~/org/gtd/tickler.org" :maxlevel . 2)))
-    (setq org-todo-keywords '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
-    (setq org-agenda-custom-commands
-          '(("@" "Contexts"
-             ((tags-todo "@email"
-                         ((org-agenda-overriding-header "Emails")))
-              (tags-todo "@phone"
-                         ((org-agenda-overriding-header "Phone")))))))
-    (setq org-clock-persist t)
-    (org-clock-persistence-insinuate)
-    (setq org-time-clocksum-format '(:hours "%d" :require-hours t :minutes ":%02d" :require-minutes t))
-    (setq org-startup-folded t)
-    (setq org-format-latex-options (plist-put org-format-latex-options :scale 2.0))
-    ))
+         ("C-c C-x C-o" . org-clock-out)
+         :map org-mode-map
+         ("<" . (lambda ()
+                  "Insert org template."
+                  (interactive)
+                  (if (or (region-active-p) (looking-back "^\s*" 1))
+                      (org-hydra/body)
+                    (self-insert-command 1)))))
+  :commands (org-dynamic-block-define)
+  :custom-face (org-ellipsis ((t (:foreground nil))))
+  :pretty-hydra
+  ((:color blue :quit-key "q" :title "Org Template")
+   ("Basic"
+    ( ("c" (hot-expand "<c") "center")
+      ("E" (hot-expand "<E") "export")
+     ("h" (hot-expand "<h") "html")
+     ("l" (hot-expand "<l") "latex")
+     ("n" (hot-expand "<n") "note")
+     ("o" (hot-expand "<q") "quote")
+     )
+    "Head"
+    (("i" (hot-expand "<i") "index")
+     ("A" (hot-expand "<A") "ASCII")
+     ("I" (hot-expand "<I") "INCLUDE")
+     ("H" (hot-expand "<H") "HTML")
+     ("L" (hot-expand "<L") "LaTeX"))
+    "Source"
+    (("S" (hot-expand "<s") "src")
+     ("m" (hot-expand "<s" "emacs-lisp") "emacs-lisp")
+     ("p" (hot-expand "<s" "python :results output") "python")
+     ("s" (hot-expand "<s" "shell") "shell")
+     ))
+   )
+  :hook (((org-babel-after-execute org-mode) . org-redisplay-inline-images) ; display image
+         (org-mode . (lambda ()
+                       "Beautify org symbols."
+                       (setq prettify-symbols-alist centaur-prettify-org-symbols-alist)
+                       (prettify-symbols-mode 1)))
+         (org-indent-mode . (lambda()
+                              (diminish 'org-indent-mode)
+                              ;; WORKAROUND: Prevent text moving around while using brackets
+                              ;; @see https://github.com/seagle0128/.emacs.d/issues/88
+                              (make-variable-buffer-local 'show-paren-mode)
+                              (setq show-paren-mode nil))))
+  :config
+  ;; (setq org-startup-indented nil)
+  ;; https://github.com/seagle0128/.emacs.d/blob/master/lisp/init-org.el
+  (defun hot-expand (str &optional mod)
+    "Expand org template.
+STR is a structure template string recognised by org like <s. MOD is a
+string with additional parameters to add the begin line of the
+structure element. HEADER string includes more parameters that are
+prepended to the element after the #+HEADER: tag."
+    (let (text)
+      (when (region-active-p)
+        (setq text (buffer-substring (region-beginning) (region-end)))
+        (delete-region (region-beginning) (region-end)))
+      (insert str)
+      (if (fboundp 'org-try-structure-completion)
+          (org-try-structure-completion) ; < org 9
+        (progn
+          ;; New template expansion since org 9
+          (require 'org-tempo nil t)
+          (org-tempo-complete-tag)))
+      (when mod (insert mod) (forward-line))
+      (when text (insert text))))
+  ;; Babel
+  (setq org-confirm-babel-evaluate nil
+        org-src-fontify-natively t
+        org-src-tab-acts-natively t)
+
+  (defvar load-language-list '((emacs-lisp . t)
+                               (python . t)
+			       (C . t)
+			       (shell . t)))
+
+  (org-babel-do-load-languages 'org-babel-load-languages
+                               load-language-list)
+  
+  (setq org-src-window-setup 'current-window)
+  (setq org-src-preserve-indentation t)
+  (setq org-time-clocksum-format '(:hours "%d" :require-hours t :minutes ":%02d" :require-minutes t))
+  (setq org-startup-folded t)
+  (setq org-format-latex-options (plist-put org-format-latex-options :scale 2.0))
+  (setq org-catch-invisible-edits 'smart))
+
 (use-package org-inlinetask
   :bind (:map org-mode-map
               ("C-c C-x t" . org-inlinetask-insert-task))
@@ -165,25 +210,6 @@
   (org-ellipsis "⤵")
   :init (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
   
-;;   ;; Babel
-;;   (setq org-confirm-babel-evaluate nil
-;;         org-src-fontify-natively t
-;;         org-src-tab-acts-natively t)
-;;   ;; https://www.mortens.dev/blog/emacs-and-the-language-server-protocol/
-;;   (org-babel-do-load-languages
-;;    'org-babel-load-languages
-;;    '((python . t)
-;;      ;; (ipython . t)
-;;      (shell . t)
-;;      (C . t)
-;;      (js . t)
-;;      ;; other languages..
-;;      ))
-
-;;   (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
-;;   )
-
-
 ;; end org
 
 (use-package doom-themes
@@ -192,27 +218,46 @@
   :config (load-theme 'doom-one t))
 
 (use-package yasnippet
+  :ensure t
   :bind
   ("C-c y s" . yas-insert-snippet)
   :config
-  ;; (yas-global-mode)
+  (yas-global-mode)
+  )
+;; https://cloudnine.github.io/science/2020-08-08-emacs-emmet-mode-yasnippet/
+(use-package yasnippet
+  :ensure t
+  :diminish yas-minor-mode
+  :bind
+  ("C-c y s" . yas-insert-snippet)
+  :config
+  (use-package yasnippet-snippets)
+  (yas-global-mode 1)
   )
 ;;                                                                            ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;LSP;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                                                            ;;
 
 (use-package lsp-mode
-    :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
-           (cpp-mode . lsp)
-	   (lisp-mode . lsp)
-	   (cpp-mode . lsp-deferred)
-            ;; if you want which-key integration
-           (lsp-mode . lsp-enable-which-key-integration))
-    :commands (lsp lsp-deferred))
+  :ensure t
+  :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+         (cpp-mode . lsp)
+	 (lisp-mode . lsp)
+	 (cpp-mode . lsp-deferred)
+         ;; if you want which-key integration
+         (lsp-mode . lsp-enable-which-key-integration))
+  :commands (lsp lsp-deferred))
 
 (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
 (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
-(use-package lsp-ui :commands lsp-ui-mode)
+(use-package lsp-ui
+  :ensure t
+  :config
+  (define-key lsp-ui-mode-map (kbd "M-.") 'lsp-ui-peek-find-definitions)
+  (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
+  (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
+  :commands lsp-ui-mode)
+
 (with-eval-after-load 'lsp-mode
   (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration)
   (yas-global-mode)
@@ -239,23 +284,19 @@
 
 
 ;; (require' lsp-ui)
-;; (define-key lsp-ui-mode-map (kbd "M-.") 'lsp-ui-peek-find-definitions)
-;; (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
-;; (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
 
 ;; https://emacs-lsp.github.io/lsp-mode/tutorials/how-to-turn-off/
 (setq lsp-ui-doc-enable nil)
 
-(setq lsp-disabled-clients '(eslint))
+;; (setq lsp-disabled-clients '(eslint))
 ;; python-lsp :: https://www.mattduck.com/lsp-python-getting-started.html
 ;; (add-hook 'python-mode-hook 'eglot-ensure)
-;; (use-package lsp-python-ms
-;;   :ensure t
-;;   :init (setq lsp-python-ms-auto-install-server t)
-;;   :hook (python-mode . (lambda ()
-;;                           (require 'lsp-python-ms)
-;;                           (lsp))))  ; or lsp-deferred
-
+(use-package lsp-python-ms
+  :ensure t
+  :init (setq lsp-python-ms-auto-install-server t)
+  :hook (python-mode . (lambda ()
+                          (require 'lsp-python-ms)
+                          (lsp-deferred))))  ; or lsp-deferred
 (use-package ace-window
   :ensure t
   :bind ("M-o" . ace-window))
@@ -318,7 +359,17 @@
 (use-package smex
   :ensure t
   :bind ("M-x" . smex))
+
 ;; (global-set-key (kbd "M-X") 'smex-major-mode-commands)
+(use-package ibuffer-projectile
+  :defer t
+  :init
+  (add-hook 'ibuffer-hook
+	    (lambda ()
+	      (ibuffer-projectile-set-filter-groups)
+	      (unless (eq ibuffer-sorting-mode 'alphabetic)
+		((insert) buffer-do-sort-by-alphabetic))))
+  )
 
 (use-package smartparens-config
     :ensure smartparens
@@ -428,14 +479,15 @@
 ;; pdf-tools
 ;; http://alberto.am/2020-04-11-pdf-tools-as-default-pdf-viewer.html
 (use-package pdf-tools
-   :pin manual
-   :config
-   (pdf-tools-install)
-   (setq-default pdf-view-display-size 'fit-width)
-   (define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward)
-   (define-key pdf-view-mode-map (kbd "C-r") 'isearch-backward)
-   :custom
-   (pdf-annot-activate-created-annotations t "automatically annotate highlights"))
+  ;; :ensure t
+  :pin manual
+  :config
+  (pdf-tools-install)
+  (setq-default pdf-view-display-size 'fit-width)
+  (define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward)
+  (define-key pdf-view-mode-map (kbd "C-r") 'isearch-backward)
+  :custom
+  (pdf-annot-activate-created-annotations t "automatically annotate highlights"))
 (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
       TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view))
       TeX-source-correlate-start-server t)
@@ -504,7 +556,7 @@
      ("\\.x?html?\\'" . default)
      ("\\.pdf\\'" . emacs)))
  '(package-selected-packages
-   '(lsp-ui smartparens rainbow-delimiters ace-window multiple-cursors which-key cask dash-functional dash flx-ido lsp-python-ms company posframe helm-projectile lsp-mode diredfl treemacs-icons-dired restclient rg counsel-projectile projectile emmet-mode yasnippet-snippets dap-mode cmake-mode snippet major-mode-hydra pretty-hydra openwith org-noter-pdftools org-pdftools pdf-tools org-bullets use-package doom-themes expand-region mwim electric-operator counsel smex swiper avy ivy flycheck)))
+   '(yaml-mode dockerfile-mode qml-mode diminish go-mode pretty-mode ob-ipython saveplace-pdf-view lsp-ui smartparens rainbow-delimiters ace-window multiple-cursors which-key cask dash-functional dash flx-ido lsp-python-ms company posframe helm-projectile lsp-mode diredfl treemacs-icons-dired restclient rg counsel-projectile projectile emmet-mode yasnippet-snippets dap-mode cmake-mode snippet major-mode-hydra pretty-hydra openwith org-noter-pdftools org-pdftools pdf-tools org-bullets use-package doom-themes expand-region mwim electric-operator counsel smex swiper avy ivy flycheck)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

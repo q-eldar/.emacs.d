@@ -1,0 +1,16 @@
+;; Emacs-W3 HTTP cookies file
+;; Automatically generated file!!! DO NOT EDIT!!!
+
+(setq url-cookie-storage
+ 'nil)
+(setq url-cookie-secure-storage
+ '((".reqres.in"
+  [url-cookie "__cfduid" "d7dc0b176baf97d341ec6ca85a83c5aaf1616665400" "Sat, 24-Apr-21 09:43:20 GMT" "/" ".reqres.in" t])
+ ("upload.wikimedia.org"
+  [url-cookie "WMF-Last-Access" "25-Mar-2021" "Mon, 26 Apr 2021 00:00:00 GMT" "/" "upload.wikimedia.org" t]))
+)
+
+;; Local Variables:
+;; version-control: never
+;; no-byte-compile: t
+;; End:

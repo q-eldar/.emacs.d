@@ -3,14 +3,18 @@
 
 (setq mc/cmds-to-run-for-all
       '(
+	backward-sexp
 	c-electric-delete-forward
 	c-electric-paren
 	c-electric-semi&comma
 	c-electric-star
 	electric-pair-delete-pair
+	forward-sexp
 	kill-region
+	multiple-cursors-mode
 	mwim-beginning
 	mwim-end
+	org-delete-char
 	org-self-insert-command
 	sp-forward-sexp
 	))
