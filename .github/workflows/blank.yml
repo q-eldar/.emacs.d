@@ -4,12 +4,12 @@ jobs:
   Explore-GitHub-Actions:
     runs-on: self-hosted
     steps:
-      - run: echo "evant: ${{ github.event_name }}."
-      - run: echo "os: ${{ runner.os }}"
-      - run: echo "branh: ${{ github.ref }} rep: ${{ github.repository }}."
+      - run: echo "evant ${{ github.event_name }}."
+      - run: echo "os ${{ runner.os }}"
+      - run: echo "branh ${{ github.ref }} rep {{ github.repository }}."
       - name: Check out repository code
         uses: actions/checkout@v2
-      - run: echo "rep: ${{ github.repository }} cloned to the runner."
+      - run: echo "rep ${{ github.repository }} cloned to the runner."
       - run: echo "workflow is now ready to test your code on the runner."
       - name: List files in the repository
         run: |
